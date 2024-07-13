@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./index.css" />
+    <title>Todo List</title>
+    <script
+      src="https://kit.fontawesome.com/b8296f84fd.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="header">
+        <div class="logo">
+          <i
+            class="fa-solid fa-clipboard-check fa-beat-fade"
+            style="color: #feb236"
+          ></i>
+        </div>
+        <h1>Todo List</h1>
+      </div>
+
+      <div class="add-container">
+        <input
+          type="text"
+          name="description"
+          id="description"
+          placeholder="Enter task here..."
+        />
+        <button class="add-todo">Add</button>
+      </div>
+      <hr />
+      <div class="list-container">
+        <ul>
+          <li class="centered-item slide-in">
+            <img
+              src="https://abizobindia.com/public/abizob_image/no_data.png"
+              alt="no item"
+            />
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script src="./index.js"></script>
+  </body>
+</html>
