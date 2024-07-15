@@ -134,12 +134,12 @@ function deleteItem(element) {
     const items = getItemsFromLocalStorage().filter((i) => i.id !== itemId);
     localStorage.setItem("items", JSON.stringify(items));
     currentPage = Math.min(currentPage, getPagesNumber());
-    console.log(currentPage);
     getFromLocalStorage(currentPage);
     updatePagination();
-    if (list.children.length === 0) {
+    if (list.children.length === 0 || getItemsFromLocalStorage().length === 0) {
       addNoItemElement();
       disableSort();
+      pagination.innerHTML = "";
     }
   });
 }
