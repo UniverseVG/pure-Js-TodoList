@@ -29,18 +29,19 @@
           id="description"
           placeholder="Enter task here..."
         />
+        <input type="date" name="date" id="date" />
         <button class="add-todo">Add</button>
       </div>
       <hr />
       <div class="list-container">
-        <ul>
-          <li class="centered-item slide-in">
-            <img
-              src="https://abizobindia.com/public/abizob_image/no_data.png"
-              alt="no item"
-            />
-          </li>
-        </ul>
+        <div>
+          <button class="list-sort">
+            SORT <span><i class="fa-solid fa-arrow-up fa-sm"></i></span>
+          </button>
+        </div>
+
+        <ul></ul>
+        <div class="pagination"></div>
       </div>
     </div>
     <script src="./index.js"></script>

@@ -1,5 +1,7 @@
 const input = document.querySelector("#description");
 
+const date = document.querySelector("#date");
+
 const addItem = document.querySelector(".add-todo");
 
 const list = document.querySelector(".list-container ul");
@@ -7,35 +9,69 @@ const list = document.querySelector(".list-container ul");
 const listItem = document.querySelector(".list-item");
 
 const noItem = document.querySelector(".centered-item");
+
 const body = document.querySelector("body");
+
+const sort = document.querySelector(".list-sort");
+
+const pagination = document.querySelector(".pagination");
+
+const itemsPerPage = 2;
+
+let currentPage = 1;
 
 body.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    if (input.value === "") {
-      return;
-    } else {
-      const inputValue = input.value;
-      if (list.children[0].classList.contains("centered-item")) {
-        list.children[0].classList.remove("slide-in");
-        list.children[0].classList.add("slide-out");
-
-        // Listen for the animation end event to remove the element
-        list.children[0].addEventListener(
-          "animationend",
-          () => {
-            list.children[0].remove();
-
-            addNewCard(inputValue);
-          },
-          { once: true }
-        ); // The { once: true } option ensures the listener is removed after being called
-      } else {
-        addNewCard(inputValue);
-      }
-    }
-    input.value = "";
-    disableButton();
+    addNewCardToList();
   }
+});
+
+function sortItems(items, ascending) {
+  items.sort((a, b) => {
+    const aValue = a.querySelector(".list-input>.list-date").value;
+    const bValue = b.querySelector(".list-input>.list-date").value;
+    return ascending
+      ? new Date(aValue) - new Date(bValue)
+      : new Date(bValue) - new Date(aValue);
+  });
+  return items;
+}
+
+sort.addEventListener("click", () => {
+  if (list.children.length > 1) {
+    const items = Array.from(list.children);
+    const sortIcon = sort.children[0].children[0];
+    const ascending = sortIcon.classList.contains("fa-arrow-up");
+
+    if (ascending) {
+      sortIcon.classList.remove("fa-arrow-up");
+      sortIcon.classList.add("fa-arrow-down");
+    } else {
+      sortIcon.classList.remove("fa-arrow-down");
+      sortIcon.classList.add("fa-arrow-up");
+    }
+
+    const sortedItems = sortItems(items, ascending);
+
+    list.innerHTML = "";
+    sortedItems.forEach((item) => {
+      list.appendChild(item);
+    });
+  }
+});
+
+function disablePastDates() {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = today.getFullYear();
+
+  today = yyyy + "-" + mm + "-" + dd;
+  date.min = today;
+}
+
+date.addEventListener("focus", () => {
+  disablePastDates();
 });
 
 function disableButton() {
@@ -44,44 +80,119 @@ function disableButton() {
   addItem.style.cursor = "not-allowed";
 }
 
-addItem.disabled = true;
-addItem.style.opacity = "0.5";
-addItem.style.cursor = "not-allowed";
+function disableSort() {
+  sort.disabled = true;
+  sort.style.opacity = "0.5";
+  sort.style.cursor = "not-allowed";
+}
 
-input.addEventListener("input", (e) => {
-  if (e.target.value.length > 0) {
+function enableSort() {
+  sort.disabled = false;
+  sort.style.opacity = "1";
+  sort.style.cursor = "pointer";
+}
+
+disableButton();
+
+input.addEventListener("input", () => {
+  getInputValue();
+});
+
+date.addEventListener("input", () => {
+  getInputValue();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  getFromLocalStorage(currentPage);
+  addBlurEventToInputs();
+  const items = getItemsFromLocalStorage();
+  if (items?.length === 0) {
+    addNoItemElement();
+    disableSort();
+  } else {
+    enableSort();
+    updatePagination();
+  }
+});
+
+function getInputValue() {
+  if (input.value.length > 0 && date.value !== "") {
     addItem.disabled = false;
     addItem.style.opacity = "1";
     addItem.style.cursor = "pointer";
   } else {
     disableButton();
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  getFromLocalStorage();
-  addBlurEventToInputs();
-});
+}
 
 function deleteItem(element) {
   const item = element.parentElement.parentElement.parentElement;
+  const itemId = item.getAttribute("key");
+
   item.classList.add("slide-out");
   item.addEventListener("animationend", () => {
-    item.remove();
+    const items = getItemsFromLocalStorage().filter((i) => i.id !== itemId);
+    localStorage.setItem("items", JSON.stringify(items));
+    currentPage = Math.min(currentPage, getPagesNumber());
+    console.log(currentPage);
+    getFromLocalStorage(currentPage);
+    updatePagination();
     if (list.children.length === 0) {
       addNoItemElement();
+      disableSort();
     }
-    saveToLocalStorage();
   });
 }
 
 function editElement(element) {
   const parent = element.parentElement.parentElement.parentElement;
   const textInput = parent.querySelector(".list-input>.list-value");
+  const dateInput = parent.querySelector(".list-input>.list-date");
 
-  let value = textInput.value;
-  textInput.value = "";
-  textInput.value = value;
+  const itemId = parent.getAttribute("key");
+  const items = getItemsFromLocalStorage();
+  const item = items.find((i) => i.id === itemId);
+
+  item.value = textInput.value;
+  item.date = dateInput.value;
+  localStorage.setItem("items", JSON.stringify(items));
+  // getFromLocalStorage(currentPage);
+}
+
+function handleChecked(element) {
+  const parent = element.parentElement.parentElement;
+  const itemId = parent.getAttribute("key");
+  const items = getItemsFromLocalStorage();
+
+  const item = items.find((i) => i.id === itemId);
+
+  item.checked = element.checked;
+  localStorage.setItem("items", JSON.stringify(items));
+
+  const parentValue = parent.querySelector(".list-input>.list-value");
+  const parentDate = parent.querySelector(".list-input>.list-date");
+  const editIcon = parent.querySelector(".list-actions>.edit");
+
+  if (element.checked) {
+    parentValue.value = getValueFromLocalStorage(itemId, "value");
+    parentDate.value = getValueFromLocalStorage(itemId, "date");
+    parentValue.disabled = true;
+    parentDate.disabled = true;
+    parentValue.style.textDecoration = "line-through";
+    parentValue.style.opacity = "0.5";
+    parentDate.style.opacity = "0.5";
+    editIcon.style.cursor = "not-allowed";
+    editIcon.style.opacity = "0.5";
+  } else {
+    parentValue.disabled = false;
+    parentDate.disabled = false;
+    parentValue.style.textDecoration = "none";
+    parentValue.style.opacity = "1";
+    parentDate.style.opacity = "1";
+    editIcon.style.cursor = "pointer";
+    editIcon.style.opacity = "1";
+  }
+  // getFromLocalStorage(currentPage); // Refresh list
 }
 
 list.addEventListener("click", (e) => {
@@ -96,35 +207,15 @@ list.addEventListener("click", (e) => {
 
     if (!isChecked) {
       editElement(e.target);
-      saveToLocalStorage();
     }
   }
-  const parent = e.target.parentElement.querySelector(".list-value");
-  const editIcon = e.target.parentElement.parentElement.querySelector(
-    ".list-actions>.edit"
-  );
-  const id = e.target.parentElement.parentElement.getAttribute("key");
 
   if (e.target.classList.contains("list-check")) {
-    if (e.target.checked) {
-      parent.value = getValueFromLocalStorage(id);
-      parent.disabled = true;
-      parent.style.textDecoration = "line-through";
-      parent.style.opacity = "0.5";
-      editIcon.style.cursor = "not-allowed";
-      editIcon.style.opacity = "0.5";
-    } else {
-      parent.disabled = false;
-      parent.style.textDecoration = "none";
-      parent.style.opacity = "1";
-      editIcon.style.cursor = "pointer";
-      editIcon.style.opacity = "1";
-    }
-    saveToLocalStorage();
+    handleChecked(e.target);
   }
 });
 
-function listItemCard(id, value = "", checked = false) {
+function listItemCard(id, value = "", checked = false, dateValue = "") {
   return `
     <li class="list-item  slide-in" key="${id}">
         <div class="list-input">
@@ -136,10 +227,11 @@ function listItemCard(id, value = "", checked = false) {
 
             />
             <input type="text" value="${value}" class="list-value" />
+             <input type="date" value="${dateValue}" class="list-date" />
         </div>
         <div class="list-actions">
             <h5 title="Click here to save edit"class="edit" ><i class="fa-regular fa-pen-to-square"></i></h5>
-            <h5 class="delete" ><i class="fa-solid fa-trash"></i></h5>
+            <h5 class="delete" title="Click here to delete" ><i class="fa-solid fa-trash"></i></h5>
         </div>
     </li>
     `;
@@ -147,29 +239,38 @@ function listItemCard(id, value = "", checked = false) {
 
 // got this code from chatgpt to add tooltip 😅😅
 function addBlurEventToInputs() {
-  document.querySelectorAll(".list-value").forEach((inputField) => {
+  showToolTip(".list-value");
+  showToolTip(".list-date");
+}
+
+function showToolTip(element) {
+  document.querySelectorAll(element).forEach((inputField) => {
     const editIcon = inputField.closest(".list-item").querySelector(".edit");
 
     inputField.addEventListener("blur", () => {
-      editIcon.title = "Click on edit icon to save edit"; // Set the title attribute for tooltip
-      // Optionally, you can add any class to show the tooltip immediately
+      editIcon.title = "Click on edit icon to save edit";
+
       editIcon.classList.add("show-tooltip");
 
-      // Hide the tooltip after a delay (optional)
       setTimeout(() => {
         editIcon.classList.remove("show-tooltip");
-      }, 3000); // Hide after 3 seconds
+      }, 3000);
     });
   });
 }
 
 addItem.addEventListener("click", (e) => {
   e.preventDefault();
+  addNewCardToList();
+});
 
-  if (input.value === "") {
+function addNewCardToList() {
+  if (input.value === "" && date.value === "") {
     return;
   } else {
     const inputValue = input.value;
+    const dateValue = date.value;
+
     if (list.children[0].classList.contains("centered-item")) {
       list.children[0].classList.remove("slide-in");
       list.children[0].classList.add("slide-out");
@@ -180,69 +281,140 @@ addItem.addEventListener("click", (e) => {
         () => {
           list.children[0].remove();
 
-          addNewCard(inputValue);
+          addNewCard(inputValue, dateValue);
         },
         { once: true }
       ); // The { once: true } option ensures the listener is removed after being called
     } else {
-      addNewCard(inputValue);
+      addNewCard(inputValue, dateValue);
     }
   }
+
   input.value = "";
+  date.value = "";
   disableButton();
-});
+}
 
-function addNewCard(inputValue) {
-  list.insertAdjacentHTML(
-    "afterbegin",
-    listItemCard(crypto.randomUUID(), inputValue, false)
-  );
-
-  saveToLocalStorage();
+function addNewCard(inputValue, dateValue) {
+  const items = getItemsFromLocalStorage();
+  const newItem = {
+    id: crypto.randomUUID(),
+    value: inputValue,
+    checked: false,
+    date: dateValue,
+  };
+  items.unshift(newItem);
+  localStorage.setItem("items", JSON.stringify(items));
+  currentPage = 1;
+  getFromLocalStorage(currentPage);
+  enableSort();
+  updatePagination();
   addBlurEventToInputs();
 }
 
-function saveToLocalStorage() {
-  const items = [];
-  document.querySelectorAll(".list-item").forEach((item) => {
-    const id = item.getAttribute("key");
-    const value = item.querySelector(".list-input>.list-value").value;
-    const checked = item.querySelector(".list-input>.list-check").checked;
-    items.push({ id, value, checked });
-  });
+function getFromLocalStorage(pageNumber = 1) {
+  const items = getItemsFromLocalStorage();
+  const start = (pageNumber - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
 
-  localStorage.setItem("items", JSON.stringify(items));
-}
+  const paginatedItems = items?.length > 0 ? items.slice(start, end) : [];
 
-function getFromLocalStorage() {
-  const items = JSON.parse(localStorage.getItem("items"));
-
-  if (items?.length > 0) {
+  if (paginatedItems?.length > 0) {
     list.innerHTML = "";
-    items.forEach((item) => {
-      const li = listItemCard(item.id, item.value, item.checked);
+    paginatedItems?.forEach((item) => {
+      const li = listItemCard(item.id, item.value, item.checked, item.date);
       list.insertAdjacentHTML("beforeend", li);
       if (item.checked) {
         const parent = document.querySelector(`[key="${item.id}"]`);
         parent.querySelector(".list-input>.list-check").checked = true;
         parent.querySelector(".list-input>.list-value").disabled = true;
+        parent.querySelector(".list-input>.list-date").disabled = true;
 
         parent.querySelector(".list-input>.list-value").style.textDecoration =
           "line-through";
         parent.querySelector(".list-input>.list-value").style.opacity = "0.5";
+        parent.querySelector(".list-input>.list-date").style.opacity = "0.5";
         parent.querySelector(".list-actions>.edit").style.cursor =
           "not-allowed";
         parent.querySelector(".list-actions>.edit").style.opacity = "0.5";
       }
     });
+  } else {
+    addNoItemElement();
+    disableSort();
+  }
+  addBlurEventToInputs();
+}
+
+function getItemsFromLocalStorage() {
+  const items = JSON.parse(localStorage.getItem("items")) || [];
+  return items;
+}
+
+function getValueFromLocalStorage(id, value = "value") {
+  if (getItemsFromLocalStorage()?.length > 0) {
+    return getItemsFromLocalStorage().find((item) => item.id === id)[value];
   }
 }
 
-function getValueFromLocalStorage(id) {
-  const items = JSON.parse(localStorage.getItem("items"));
-  if (items?.length > 0) {
-    return items.find((item) => item.id === id).value;
+//pagination
+
+function getPagesNumber() {
+  if (getItemsFromLocalStorage()?.length > 0) {
+    return Math.ceil(getItemsFromLocalStorage().length / itemsPerPage);
   }
+}
+
+function updatePagination() {
+  const pagesNumber = getPagesNumber();
+  pagination.innerHTML = "";
+  if (pagesNumber <= 1) return;
+  pagination.insertAdjacentHTML(
+    "beforeend",
+    `<button class="prev ${currentPage === 1 ? "disabled" : ""}">Prev</button>`
+  );
+
+  for (let i = 0; i < pagesNumber; i++) {
+    pagination.insertAdjacentHTML(
+      "beforeend",
+      `<button class="page ${currentPage === i + 1 ? "active" : ""}" ><span>${
+        i + 1
+      }</span></button>`
+    );
+  }
+  pagination.insertAdjacentHTML(
+    "beforeend",
+    `<button class="next ${
+      currentPage === pagesNumber ? "disabled" : ""
+    }">Next </button>`
+  );
+}
+pagination.addEventListener("click", (e) => {
+  if (e.target.classList.contains("prev")) {
+    if (currentPage === 1) return;
+    currentPage = currentPage - 1;
+    getFromLocalStorage(currentPage);
+    updatePagination();
+  } else if (e.target.classList.contains("next")) {
+    if (currentPage === getPagesNumber()) return;
+    currentPage = currentPage + 1;
+    getFromLocalStorage(currentPage);
+    updatePagination();
+  } else if (e.target.classList.contains("page")) {
+    currentPage = parseInt(e.target.textContent);
+    getFromLocalStorage(currentPage);
+    updatePagination();
+  }
+});
+
+function getCurrentPage() {
+  const currentPage = getFromLocalStorage();
+  return currentPage;
+}
+
+function getItemsPerPage() {
+  const items = getItemsFromLocalStorage();
+  return itemsPerPage > items.length ? items.length : itemsPerPage;
 }
 
 function addNoItemElement() {

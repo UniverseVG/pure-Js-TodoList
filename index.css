@@ -8,7 +8,7 @@ body {
 .main-container {
   max-width: 80vw;
   margin-inline: auto;
-  background-color: #a2b9bc;
+  background-color: #bbdefb;
   padding: 16px;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
@@ -20,6 +20,9 @@ body {
   justify-content: center;
   align-items: center;
   gap: 12px;
+  background-color: #42a5f5;
+  margin-bottom: 20px;
+  border-radius: 8px;
 }
 
 .logo > i {
@@ -36,11 +39,22 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  overflow: scroll;
 }
 .add-container > input {
   width: 100%;
   padding: 8px;
   border-radius: 8px;
+  border: 0;
+  outline: 0;
+  flex: 2;
+}
+
+#date {
+  width: 100%;
+  flex: 0.5;
   border: 0;
   outline: 0;
 }
@@ -51,10 +65,30 @@ h1 {
 
 .add-todo {
   padding: 10px;
-  background-color: #feb236;
+  background-color: #2962ff;
   border: 0;
   border-radius: 8px;
   color: #fff;
+}
+
+.list-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-sort {
+  border: 0;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  float: right;
+}
+
+.list-sort > span {
+  margin-left: 4px;
+  font-size: 14px;
 }
 
 ul {
@@ -70,7 +104,7 @@ ul {
   padding-inline: 8px;
   gap: 8px;
   border-radius: 8px;
-  background-color: #f0f0f0;
+  background-color: #e3f2fd;
   margin-bottom: 12px;
   animation-duration: 0.5s;
   animation-fill-mode: forwards;
@@ -116,8 +150,22 @@ ul {
   border-radius: 4px;
 }
 
+.list-date {
+  border: 1px solid #bbdefb;
+  outline: 0;
+  width: 30%;
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.list-date:focus {
+  border: 1px solid #0080ff;
+  border-radius: 4px;
+}
+
 .fa-trash {
-  color: #d64161;
+  color: #f50057;
 }
 
 h5 {
@@ -166,6 +214,74 @@ h5 {
   opacity: 1;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.prev {
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.next {
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.next.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.prev.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.prev:hover {
+  background-color: #e3f2fd;
+}
+
+.next:hover {
+  background-color: #e3f2fd;
+}
+
+.page {
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  height: 30px;
+  width: 30px;
+  padding: 4px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+.page:hover {
+  background-color: #e3f2fd;
+}
+
+.page.active {
+  background-color: #42a5f5;
+}
+
+.page > span {
+  pointer-events: none;
+  text-align: center;
+}
+
 /* animations */
 @keyframes slideInFromLeft {
   0% {
@@ -190,7 +306,24 @@ h5 {
 }
 
 @media screen and (max-width: 768px) {
+  * {
+    font-size: 16px;
+  }
   .main-container {
     max-width: 90vw;
+  }
+  .list-date {
+    width: 100%;
+  }
+
+  .add-container > input {
+    width: 100%;
+    flex: 0.6;
+  }
+
+  #date {
+    width: 100%;
+    flex: 0.4;
+    font-size: 14px;
   }
 }
