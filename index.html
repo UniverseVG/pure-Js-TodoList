@@ -34,14 +34,41 @@
       </div>
       <hr />
       <div class="list-container">
-        <div>
-          <button class="list-sort">
+        <div class="list-sort-container">
+          <button class="list-filter actionButton">
+            Filter <span><i class="fa-solid fa-filter-circle-xmark"></i></span>
+          </button>
+          <button class="list-sort actionButton">
             SORT <span><i class="fa-solid fa-arrow-up fa-sm"></i></span>
+          </button>
+          <button class="remove-filter actionButton hidden">
+            Remove Filter <span><i class="fa-solid fa-times"></i></span>
           </button>
         </div>
 
         <ul></ul>
         <div class="pagination"></div>
+      </div>
+    </div>
+    <!-- filter modal -->
+    <div id="filterModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Filter Tasks</h2>
+        <div class="filter-container">
+          <label for="filter-date">Date:</label>
+          <input type="date" id="filter-date" name="filter-date" />
+        </div>
+        <div class="filter-container">
+          <label for="filter-text">Text:</label>
+          <input
+            type="text"
+            id="filter-text"
+            name="filter-text"
+            placeholder="Enter text to filter"
+          />
+        </div>
+        <button id="apply-filter">Apply Filter</button>
       </div>
     </div>
     <script src="./index.js"></script>

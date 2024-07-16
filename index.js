@@ -16,13 +16,90 @@ const sort = document.querySelector(".list-sort");
 
 const pagination = document.querySelector(".pagination");
 
-const itemsPerPage = 2;
+const modal = document.getElementById("filterModal");
+
+const filterBtn = document.querySelector(".list-filter");
+
+const applyFilter = document.getElementById("apply-filter");
+
+const span = document.getElementsByClassName("close")[0];
+
+const removeFilter = document.querySelector(".remove-filter");
 
 let currentPage = 1;
+const itemsPerPage = 20;
+let isFiltered = false;
+let filteredItems = [];
 
 body.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     addNewCardToList();
+  }
+});
+
+// Filter
+
+filterBtn.onclick = function () {
+  modal.style.display = "block";
+};
+
+span.onclick = function () {
+  modal.style.display = "none";
+};
+
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+applyFilter.addEventListener("click", () => {
+  const filterDate = document.getElementById("filter-date").value;
+  const filterText = document.getElementById("filter-text").value.toLowerCase();
+  const items = getItemsFromLocalStorage();
+  filteredItems = items.filter((item) => {
+    const matchDate = filterDate ? item.date === filterDate : true;
+    const matchText = filterText
+      ? item.value.toLowerCase().includes(filterText)
+      : true;
+    return matchDate && matchText;
+  });
+
+  isFiltered = true;
+  currentPage = 1;
+  getFromLocalStorage(currentPage, filteredItems);
+  updatePagination();
+  removeFilter.classList.remove("hidden");
+  if (
+    filterBtn.children[0].children[0].classList.contains(
+      "fa-filter-circle-xmark"
+    )
+  ) {
+    filterBtn.children[0].children[0].classList.remove(
+      "fa-filter-circle-xmark"
+    );
+    filterBtn.children[0].children[0].classList.add("fa-filter");
+  }
+  modal.style.display = "none";
+});
+
+removeFilter.addEventListener("click", () => {
+  isFiltered = false;
+  currentPage = 1;
+  document.getElementById("filter-date").value = "";
+  document.getElementById("filter-text").value = "";
+  getFromLocalStorage(currentPage, getItemsFromLocalStorage());
+  updatePagination();
+  removeFilter.classList.add("hidden");
+  if (filterBtn.children[0].children[0].classList.contains("fa-filter")) {
+    filterBtn.children[0].children[0].classList.remove("fa-filter");
+    filterBtn.children[0].children[0].classList.add("fa-filter-circle-xmark");
+  }
+
+  if (getItemsFromLocalStorage().length === 0) {
+    disableSort();
+  } else {
+    enableSort();
   }
 });
 
@@ -84,12 +161,18 @@ function disableSort() {
   sort.disabled = true;
   sort.style.opacity = "0.5";
   sort.style.cursor = "not-allowed";
+  filterBtn.disabled = true;
+  filterBtn.style.opacity = "0.5";
+  filterBtn.style.cursor = "not-allowed";
 }
 
 function enableSort() {
   sort.disabled = false;
   sort.style.opacity = "1";
   sort.style.cursor = "pointer";
+  filterBtn.disabled = false;
+  filterBtn.style.opacity = "1";
+  filterBtn.style.cursor = "pointer";
 }
 
 disableButton();
@@ -103,9 +186,9 @@ date.addEventListener("input", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  getFromLocalStorage(currentPage);
+  getFromLocalStorage(currentPage, getItemsFromLocalStorage());
   addBlurEventToInputs();
-  const items = getItemsFromLocalStorage();
+  const items = isFiltered ? filteredItems : getItemsFromLocalStorage();
   if (items?.length === 0) {
     addNoItemElement();
     disableSort();
@@ -131,19 +214,31 @@ function deleteItem(element) {
 
   item.classList.add("slide-out");
   item.addEventListener("animationend", () => {
-    const items = getItemsFromLocalStorage().filter((i) => i.id !== itemId);
+    let items = getItemsFromLocalStorage();
+    items = items.filter((i) => i.id !== itemId);
+
     localStorage.setItem("items", JSON.stringify(items));
+
+    if (isFiltered) {
+      filteredItems = filteredItems.filter((i) => i.id !== itemId);
+    }
+
     currentPage = Math.min(currentPage, getPagesNumber());
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, isFiltered ? filteredItems : items);
     updatePagination();
-    if (list.children.length === 0 || getItemsFromLocalStorage().length === 0) {
+    console.log(items);
+
+    if (
+      list.children.length === 0 ||
+      items.length === 0 ||
+      (isFiltered && filteredItems.length === 0)
+    ) {
       addNoItemElement();
       disableSort();
       pagination.innerHTML = "";
     }
   });
 }
-
 function editElement(element) {
   const parent = element.parentElement.parentElement.parentElement;
   const textInput = parent.querySelector(".list-input>.list-value");
@@ -296,7 +391,7 @@ function addNewCardToList() {
 }
 
 function addNewCard(inputValue, dateValue) {
-  const items = getItemsFromLocalStorage();
+  const items = isFiltered ? filteredItems : getItemsFromLocalStorage();
   const newItem = {
     id: crypto.randomUUID(),
     value: inputValue,
@@ -306,17 +401,15 @@ function addNewCard(inputValue, dateValue) {
   items.unshift(newItem);
   localStorage.setItem("items", JSON.stringify(items));
   currentPage = 1;
-  getFromLocalStorage(currentPage);
+  getFromLocalStorage(currentPage, items);
   enableSort();
   updatePagination();
   addBlurEventToInputs();
 }
 
-function getFromLocalStorage(pageNumber = 1) {
-  const items = getItemsFromLocalStorage();
+function getFromLocalStorage(pageNumber = 1, items) {
   const start = (pageNumber - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-
   const paginatedItems = items?.length > 0 ? items.slice(start, end) : [];
 
   if (paginatedItems?.length > 0) {
@@ -360,8 +453,10 @@ function getValueFromLocalStorage(id, value = "value") {
 //pagination
 
 function getPagesNumber() {
-  if (getItemsFromLocalStorage()?.length > 0) {
-    return Math.ceil(getItemsFromLocalStorage().length / itemsPerPage);
+  const items = isFiltered ? filteredItems : getItemsFromLocalStorage();
+
+  if (items?.length > 0) {
+    return Math.ceil(items.length / itemsPerPage);
   }
 }
 
@@ -390,32 +485,23 @@ function updatePagination() {
   );
 }
 pagination.addEventListener("click", (e) => {
+  const items = isFiltered ? filteredItems : getItemsFromLocalStorage();
   if (e.target.classList.contains("prev")) {
     if (currentPage === 1) return;
     currentPage = currentPage - 1;
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, items);
     updatePagination();
   } else if (e.target.classList.contains("next")) {
     if (currentPage === getPagesNumber()) return;
     currentPage = currentPage + 1;
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, items);
     updatePagination();
   } else if (e.target.classList.contains("page")) {
     currentPage = parseInt(e.target.textContent);
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, items);
     updatePagination();
   }
 });
-
-function getCurrentPage() {
-  const currentPage = getFromLocalStorage();
-  return currentPage;
-}
-
-function getItemsPerPage() {
-  const items = getItemsFromLocalStorage();
-  return itemsPerPage > items.length ? items.length : itemsPerPage;
-}
 
 function addNoItemElement() {
   list.innerHTML = `<li class="centered-item slide-in "><img src="https://abizobindia.com/public/abizob_image/no_data.png" alt="no item"  /></li>`;

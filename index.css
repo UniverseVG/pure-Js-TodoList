@@ -76,19 +76,30 @@ h1 {
   flex-direction: column;
 }
 
-.list-sort {
+.list-sort-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.actionButton {
   border: 0;
   padding: 8px;
   border-radius: 8px;
   background-color: #fff;
   cursor: pointer;
   font-size: 14px;
-  float: right;
 }
 
-.list-sort > span {
+.actionButton > span {
   margin-left: 4px;
   font-size: 14px;
+}
+
+.actionButton.hidden {
+  display: none;
 }
 
 ul {
@@ -282,6 +293,102 @@ h5 {
   text-align: center;
 }
 
+/* filter model */
+
+.filter-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 8px;
+}
+.filter-container > label {
+  width: 5%;
+}
+
+#filter-date {
+  border: 1px solid #bbdefb;
+  outline: 0;
+  background-color: transparent;
+  padding: 8px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+#filter-date:focus {
+  border: 1px solid #0080ff;
+  border-radius: 4px;
+}
+
+#filter-text {
+  border: 1px solid #bbdefb;
+  outline: 0;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 40%;
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+#filter-text:focus {
+  border: 1px solid #0080ff;
+  border-radius: 4px;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  border-radius: 8px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+#apply-filter {
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #bbdefb;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#apply-filter:hover {
+  background-color: #e3f2fd;
+}
+
 /* animations */
 @keyframes slideInFromLeft {
   0% {
@@ -325,5 +432,19 @@ h5 {
     width: 100%;
     flex: 0.4;
     font-size: 14px;
+  }
+  .filter-container {
+    flex-direction: column;
+  }
+  .filter-container > label {
+    width: 100%;
+  }
+  #filter-text {
+    margin-top: 0px;
+    width: 100%;
+  }
+  #filter-date {
+    margin-bottom: 20px;
+    width: 100%;
   }
 }
