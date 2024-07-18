@@ -526,7 +526,7 @@ h5 {
 }
 
 input[type="date"] {
-  min-height: 25px;
+  -webkit-appearance: none;
 }
 
 /* animations */
@@ -586,9 +586,5 @@ input[type="date"] {
   #filter-date {
     margin-bottom: 20px;
     width: 100%;
-  }
-
-  input[type="date"] {
-    min-height: 25px;
   }
 }
