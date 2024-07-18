@@ -33,6 +33,10 @@ body {
   background-color: var(--background-color);
 }
 
+input[type="date"] {
+  min-height: 2.5rem;
+}
+
 /* theme-switcher  */
 
 /* The switch - the box around the slider */
