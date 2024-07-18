@@ -33,10 +33,6 @@ body {
   background-color: var(--background-color);
 }
 
-input[type="date"] {
-  min-height: 2.5rem;
-}
-
 /* theme-switcher  */
 
 /* The switch - the box around the slider */
@@ -529,6 +525,10 @@ h5 {
   background-color: #e3f2fd;
 }
 
+input[type="date"] {
+  min-height: 25px;
+}
+
 /* animations */
 @keyframes slideInFromLeft {
   0% {
@@ -586,5 +586,9 @@ h5 {
   #filter-date {
     margin-bottom: 20px;
     width: 100%;
+  }
+
+  input[type="date"] {
+    min-height: 25px;
   }
 }
