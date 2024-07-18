@@ -446,6 +446,7 @@ h5 {
   background-color: transparent;
   padding: 8px;
   width: 40%;
+  min-height: 25px;
   border-radius: 4px;
   color: var(--font-color);
 }
@@ -461,6 +462,7 @@ h5 {
   margin-top: 20px;
   margin-bottom: 20px;
   width: 40%;
+  min-height: 25px;
   background-color: transparent;
   padding: 8px;
   color: var(--font-color);
