@@ -71,13 +71,16 @@ window.onclick = function (event) {
 applyFilter.addEventListener("click", () => {
   const filterDate = document.getElementById("filter-date").value;
   const filterText = document.getElementById("filter-text").value.toLowerCase();
+  const filterCheck = document.getElementById("filter-check").checked;
+
   const items = getItemsFromLocalStorage();
   filteredItems = items.filter((item) => {
     const matchDate = filterDate ? item.date === filterDate : true;
+    const matchCheck = filterCheck ? item.checked === filterCheck : true;
     const matchText = filterText
       ? item.value.toLowerCase().includes(filterText)
       : true;
-    return matchDate && matchText;
+    return matchDate && matchText && matchCheck;
   });
 
   isFiltered = true;
@@ -103,6 +106,7 @@ removeFilter.addEventListener("click", () => {
   currentPage = 1;
   document.getElementById("filter-date").value = "";
   document.getElementById("filter-text").value = "";
+  document.getElementById("filter-check").checked = false;
   getFromLocalStorage(currentPage, getItemsFromLocalStorage());
   updatePagination();
   removeFilter.classList.add("hidden");

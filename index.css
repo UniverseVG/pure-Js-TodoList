@@ -428,7 +428,20 @@ h5 {
   gap: 8px;
 }
 
+.filter-container-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 8px;
+}
+
 .filter-container > label {
+  width: 5%;
+}
+
+.filter-container-check > input {
   width: 5%;
 }
 
@@ -472,6 +485,12 @@ h5 {
 #filter-text:focus {
   border: 1px solid #0080ff;
   border-radius: 4px;
+}
+
+#filter-check {
+  border: 1px solid #bbdefb;
+  outline: 0;
+  width: 5%;
 }
 
 .modal {
@@ -577,6 +596,7 @@ input[type="date"] {
   }
   .filter-container {
     flex-direction: column;
+    align-items: flex-start;
   }
   .filter-container > label {
     width: 100%;
@@ -588,5 +608,11 @@ input[type="date"] {
   #filter-date {
     margin-bottom: 20px;
     width: 100%;
+  }
+  #filter-check {
+    width: 10%;
+  }
+  .filter-container-check {
+    flex-direction: row;
   }
 }
