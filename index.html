@@ -13,13 +13,23 @@
   <body>
     <div class="main-container">
       <div class="header">
+        <div></div>
         <div class="logo">
           <i
             class="fa-solid fa-clipboard-check fa-beat-fade"
             style="color: #feb236"
           ></i>
+          <h1>Todo List</h1>
         </div>
-        <h1>Todo List</h1>
+
+        <div class="theme-switch">
+          <i class="fa-solid fa-sun" style="color: #feb236"></i>
+          <label id="switch" class="switch">
+            <input type="checkbox" id="slider" class="checkbox" />
+            <span class="slider round"></span>
+          </label>
+          <i class="fa-solid fa-moon" style="color: var(--text-color)"></i>
+        </div>
       </div>
 
       <div class="add-container">
@@ -29,7 +39,7 @@
           id="description"
           placeholder="Enter task here..."
         />
-        <input type="date" name="date" id="date" />
+        <input type="date" name="date" id="date" placeholder="Enter date" />
         <button class="add-todo">Add</button>
       </div>
       <hr />
@@ -54,7 +64,7 @@
     <div id="filterModal" class="modal">
       <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>Filter Tasks</h2>
+        <h2 class="filter-header">Filter Tasks</h2>
         <div class="filter-container">
           <label for="filter-date">Date:</label>
           <input type="date" id="filter-date" name="filter-date" />

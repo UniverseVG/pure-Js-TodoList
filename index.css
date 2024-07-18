@@ -2,27 +2,143 @@
   font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
 }
-body {
-  background-color: #f0f0f0;
+
+.light {
+  --background-color: #f0f0f0;
+  --container-color: #bbdefb;
+  --box-shadow-color-1: rgba(0, 0, 0, 0.6);
+  --box-shadow-color-2: rgba(0, 0, 0, 0.5);
+  --box-shadow-color-3: rgba(10, 37, 64, 0.5);
+  --header-color: #42a5f5;
+  --list-background-color: #e3f2fd;
+  --text-color: #ffff;
+  --font-color: #000000;
+  --border-secondary: #bbdefb;
+  --font-color: #000000;
 }
+.dark {
+  --background-color: #2a2c2d;
+  --container-color: #616161;
+  --header-color: #fafafa;
+  --text-color: #000000;
+  --font-color: #ffffff;
+  --box-shadow-color-1: rgba(255, 255, 255, 0.6);
+  --box-shadow-color-2: rgba(238, 238, 238, 0.5);
+  --box-shadow-color-3: rgba(189, 189, 189, 0.25);
+  --list-background-color: #bdbdbd;
+  --border-secondary: #212121;
+  --font-color: #ffffff;
+}
+body {
+  background-color: var(--background-color);
+}
+
+/* theme-switcher  */
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 15px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 0px;
+  bottom: 4px;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  box-shadow: 0 0px 15px #2020203d;
+  background-color: #f4f6f7;
+  /* background-repeat: no-repeat;
+  background-position: center; */
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(24px);
+  -ms-transform: translateX(24px);
+  transform: translateX(24px);
+  /* background: white url("https://i.ibb.co/7JfqXxB/sunny.png"); */
+  background-color: #f4f6f7;
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 .main-container {
   max-width: 80vw;
   margin-inline: auto;
-  background-color: #bbdefb;
+  background-color: var(--container-color);
   padding: 16px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
-    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  box-shadow: var(--box-shadow-color-1) 0px 50px 100px -20px,
+    var(--box-shadow-color-2) 0px 30px 60px -30px,
+    var(--box-shadow-color-3) 0px -2px 6px 0px inset;
   border-radius: 8px;
 }
+
 .header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
-  background-color: #42a5f5;
+  padding: 8px;
+  background-color: var(--header-color);
   margin-bottom: 20px;
   border-radius: 8px;
+}
+
+.theme-switch {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .logo > i {
@@ -31,7 +147,7 @@ body {
 
 h1 {
   font-size: 38px;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .add-container {
@@ -43,6 +159,7 @@ h1 {
   margin-bottom: 20px;
   overflow: scroll;
 }
+
 .add-container > input {
   width: 100%;
   padding: 8px;
@@ -50,6 +167,9 @@ h1 {
   border: 0;
   outline: 0;
   flex: 2;
+  color: var(--font-color);
+  min-height: 24px;
+  background-color: var(--background-color);
 }
 
 #date {
@@ -57,6 +177,8 @@ h1 {
   flex: 0.5;
   border: 0;
   outline: 0;
+  padding: 8px;
+  min-height: 24px;
 }
 
 .add-container > input:focus {
@@ -91,6 +213,8 @@ h1 {
   background-color: #fff;
   cursor: pointer;
   font-size: 14px;
+  background-color: var(--background-color);
+  color: var(--font-color);
 }
 
 .actionButton > span {
@@ -115,7 +239,7 @@ ul {
   padding-inline: 8px;
   gap: 8px;
   border-radius: 8px;
-  background-color: #e3f2fd;
+  background-color: var(--list-background-color);
   margin-bottom: 12px;
   animation-duration: 0.5s;
   animation-fill-mode: forwards;
@@ -162,7 +286,7 @@ ul {
 }
 
 .list-date {
-  border: 1px solid #bbdefb;
+  border: 1px solid var(--border-secondary);
   outline: 0;
   width: 30%;
   background-color: transparent;
@@ -303,8 +427,17 @@ h5 {
   width: 100%;
   gap: 8px;
 }
+
 .filter-container > label {
   width: 5%;
+}
+
+.filter-header {
+  color: var(--font-color);
+}
+
+.filter-container > label {
+  color: var(--font-color);
 }
 
 #filter-date {
@@ -314,6 +447,7 @@ h5 {
   padding: 8px;
   width: 40%;
   border-radius: 4px;
+  color: var(--font-color);
 }
 
 #filter-date:focus {
@@ -329,6 +463,7 @@ h5 {
   width: 40%;
   background-color: transparent;
   padding: 8px;
+  color: var(--font-color);
   border-radius: 4px;
 }
 
@@ -352,7 +487,7 @@ h5 {
 }
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: var(--background-color);
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
@@ -369,10 +504,11 @@ h5 {
 
 .close:hover,
 .close:focus {
-  color: black;
+  color: var(--font-color);
   text-decoration: none;
   cursor: pointer;
 }
+
 #apply-filter {
   cursor: pointer;
   border: 0;

@@ -26,6 +26,21 @@ const span = document.getElementsByClassName("close")[0];
 
 const removeFilter = document.querySelector(".remove-filter");
 
+const themeSwitcher = document.querySelector("#slider");
+
+body.classList.add("light");
+
+themeSwitcher.addEventListener("change", (e) => {
+  console.log(body.classList);
+  if (body.classList.contains("dark")) {
+    body.classList.remove("dark");
+    body.classList.add("light");
+  } else {
+    body.classList.remove("light");
+    body.classList.add("dark");
+  }
+});
+
 let currentPage = 1;
 const itemsPerPage = 20;
 let isFiltered = false;
@@ -324,6 +339,7 @@ function listItemCard(id, value = "", checked = false, dateValue = "") {
             <input type="text" value="${value}" class="list-value" />
              <input type="date" value="${dateValue}" class="list-date" />
         </div>
+
         <div class="list-actions">
             <h5 title="Click here to save edit"class="edit" ><i class="fa-regular fa-pen-to-square"></i></h5>
             <h5 class="delete" title="Click here to delete" ><i class="fa-solid fa-trash"></i></h5>
