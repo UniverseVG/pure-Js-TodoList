@@ -53,16 +53,29 @@
       </div>
       <hr />
       <div class="list-container">
-        <div class="list-sort-container">
-          <button class="list-filter actionButton">
-            Filter <span><i class="fa-solid fa-filter-circle-xmark"></i></span>
-          </button>
-          <button class="list-sort actionButton">
-            SORT <span><i class="fa-solid fa-arrow-up fa-sm"></i></span>
-          </button>
-          <button class="remove-filter actionButton hidden">
-            Remove Filter <span><i class="fa-solid fa-times"></i></span>
-          </button>
+        <div class="list-header">
+          <div class="search-container">
+            <input
+              type="text"
+              name="search"
+              class="search"
+              id="search"
+              placeholder="Search"
+            />
+            <i class="fas fa-search search-icon"></i>
+          </div>
+          <div class="list-action-container">
+            <button class="list-filter actionButton">
+              Filter
+              <span><i class="fa-solid fa-filter-circle-xmark"></i></span>
+            </button>
+            <button class="list-sort actionButton">
+              SORT <span><i class="fa-solid fa-arrow-up fa-sm"></i></span>
+            </button>
+            <button class="remove-filter actionButton hidden">
+              Remove Filter <span><i class="fa-solid fa-times"></i></span>
+            </button>
+          </div>
         </div>
 
         <ul></ul>

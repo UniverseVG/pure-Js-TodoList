@@ -30,6 +30,8 @@ const themeSwitcher = document.querySelector("#slider");
 
 const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
 
+const search = document.querySelector(".search");
+
 body.classList.add(darkThemeMq.matches ? "dark" : "light");
 
 themeSwitcher.addEventListener("change", (e) => {
@@ -68,6 +70,26 @@ window.onclick = function (event) {
     modal.style.display = "none";
   }
 };
+
+//search
+
+function handleSearchInput() {
+  const filterText = search.value.toLowerCase();
+
+  const items = getItemsFromLocalStorage();
+
+  const filteredItems = items.filter((item) => {
+    return item.value.toLowerCase().includes(filterText);
+  });
+
+  isFiltered = true;
+  currentPage = 1;
+  getFromLocalStorage(currentPage, filteredItems);
+  updatePagination();
+}
+
+const debouncedHandleSearchInput = debounce(handleSearchInput, 1000);
+search.addEventListener("input", debouncedHandleSearchInput);
 
 applyFilter.addEventListener("click", () => {
   const filterDate = document.getElementById("filter-date").value;
@@ -118,8 +140,10 @@ removeFilter.addEventListener("click", () => {
 
   if (getItemsFromLocalStorage().length === 0) {
     disableSort();
+    disableSearch();
   } else {
     enableSort();
+    enableSearch();
   }
 });
 
@@ -186,6 +210,18 @@ function disableSort() {
   filterBtn.style.cursor = "not-allowed";
 }
 
+function disableSearch() {
+  search.disabled = true;
+  search.style.opacity = "0.5";
+  search.style.cursor = "not-allowed";
+}
+
+function enableSearch() {
+  search.disabled = false;
+  search.style.opacity = "1";
+  search.style.cursor = "text";
+}
+
 function enableSort() {
   sort.disabled = false;
   sort.style.opacity = "1";
@@ -212,8 +248,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (items?.length === 0) {
     addNoItemElement();
     disableSort();
+    disableSearch();
   } else {
     enableSort();
+    enableSearch();
     updatePagination();
   }
 });
@@ -255,6 +293,7 @@ function deleteItem(element) {
     ) {
       addNoItemElement();
       disableSort();
+      disableSearch();
       pagination.innerHTML = "";
     }
   });
@@ -426,6 +465,7 @@ function addNewCard(inputValue, dateValue) {
   currentPage = 1;
   getFromLocalStorage(currentPage, items);
   enableSort();
+  enableSearch();
   updatePagination();
   addBlurEventToInputs();
   showToast("Item Added", "success", 2000);
@@ -567,3 +607,13 @@ const showToast = (
 
   document.body.appendChild(box);
 };
+
+// debounce
+
+function debounce(func, wait = 1000) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}

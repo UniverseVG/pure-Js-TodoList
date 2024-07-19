@@ -198,12 +198,45 @@ h1 {
   flex-direction: column;
 }
 
-.list-sort-container {
+.list-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 50%;
+}
+
+.search-container .search {
+  padding-right: 30px; /* space for the icon */
+  width: 100%;
+}
+
+.search-container .search-icon {
+  position: absolute;
+  right: 10px;
+  color: #aaa;
+}
+
+.search {
+  padding: 8px;
+  border-radius: 8px;
+  border: 0;
+  outline: 0;
+  color: var(--font-color);
+  background-color: var(--background-color);
+}
+
+.list-action-container {
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-bottom: 20px;
 }
 
 .actionButton {
@@ -679,8 +712,6 @@ input[type="date"] {
     width: 0%;
   }
 }
-
-
 
 /* animations  for add and delete */
 @keyframes slideInFromLeft {
