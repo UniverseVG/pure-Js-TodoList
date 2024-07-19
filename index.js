@@ -28,10 +28,11 @@ const removeFilter = document.querySelector(".remove-filter");
 
 const themeSwitcher = document.querySelector("#slider");
 
-body.classList.add("light");
+const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+
+body.classList.add(darkThemeMq.matches ? "dark" : "light");
 
 themeSwitcher.addEventListener("change", (e) => {
-  console.log(body.classList);
   if (body.classList.contains("dark")) {
     body.classList.remove("dark");
     body.classList.add("light");
@@ -245,7 +246,7 @@ function deleteItem(element) {
     currentPage = Math.min(currentPage, getPagesNumber());
     getFromLocalStorage(currentPage, isFiltered ? filteredItems : items);
     updatePagination();
-    console.log(items);
+    showToast("Item Deleted", "danger", 2000);
 
     if (
       list.children.length === 0 ||
@@ -270,6 +271,8 @@ function editElement(element) {
   item.value = textInput.value;
   item.date = dateInput.value;
   localStorage.setItem("items", JSON.stringify(items));
+  showToast("Item Edited", "info", 2000);
+
   // getFromLocalStorage(currentPage);
 }
 
@@ -425,6 +428,7 @@ function addNewCard(inputValue, dateValue) {
   enableSort();
   updatePagination();
   addBlurEventToInputs();
+  showToast("Item Added", "success", 2000);
 }
 
 function getFromLocalStorage(pageNumber = 1, items) {
@@ -505,20 +509,19 @@ function updatePagination() {
   );
 }
 pagination.addEventListener("click", (e) => {
-  const items = isFiltered ? filteredItems : getItemsFromLocalStorage();
   if (e.target.classList.contains("prev")) {
     if (currentPage === 1) return;
     currentPage = currentPage - 1;
-    getFromLocalStorage(currentPage, items);
+    getFromLocalStorage(currentPage);
     updatePagination();
   } else if (e.target.classList.contains("next")) {
     if (currentPage === getPagesNumber()) return;
     currentPage = currentPage + 1;
-    getFromLocalStorage(currentPage, items);
+    getFromLocalStorage(currentPage);
     updatePagination();
   } else if (e.target.classList.contains("page")) {
     currentPage = parseInt(e.target.textContent);
-    getFromLocalStorage(currentPage, items);
+    getFromLocalStorage(currentPage);
     updatePagination();
   }
 });
@@ -526,3 +529,41 @@ pagination.addEventListener("click", (e) => {
 function addNoItemElement() {
   list.innerHTML = `<li class="centered-item slide-in "><img src="https://abizobindia.com/public/abizob_image/no_data.png" alt="no item"  /></li>`;
 }
+
+// toast notification
+
+let icon = {
+  success: '<span class="material-symbols-outlined">task_alt</span>',
+  danger: '<span class="material-symbols-outlined">error</span>',
+  warning: '<span class="material-symbols-outlined">warning</span>',
+  info: '<span class="material-symbols-outlined">info</span>',
+};
+
+const showToast = (
+  message = "Sample Message",
+  toastType = "info",
+  duration = 5000
+) => {
+  if (!Object.keys(icon).includes(toastType)) toastType = "info";
+
+  let box = document.createElement("div");
+  box.classList.add("toast", `toast-${toastType}`);
+  box.innerHTML = ` <div class="toast-content-wrapper">
+                    <div class="toast-icon">
+                    ${icon[toastType]}
+                    </div>
+                    <div class="toast-message">${message}</div>
+                    <div class="toast-progress"></div>
+                    </div>`;
+  duration = duration || 5000;
+  box.querySelector(".toast-progress").style.animationDuration = `${
+    duration / 1000
+  }s`;
+
+  let toastAlready = document.body.querySelector(".toast");
+  if (toastAlready) {
+    toastAlready.remove();
+  }
+
+  document.body.appendChild(box);
+};
