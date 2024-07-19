@@ -78,6 +78,15 @@ function handleSearchInput() {
 
   const items = getItemsFromLocalStorage();
 
+  if (filterText.length === 0) {
+    isFiltered = false;
+    currentPage = 1;
+    getFromLocalStorage(currentPage, items);
+    updatePagination();
+    enableSort();
+    return;
+  }
+
   const filteredItems = items.filter((item) => {
     return item.value.toLowerCase().includes(filterText);
   });
