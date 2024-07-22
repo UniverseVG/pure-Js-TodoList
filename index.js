@@ -558,19 +558,20 @@ function updatePagination() {
   );
 }
 pagination.addEventListener("click", (e) => {
+  const items = isFiltered ? filteredItems : getItemsFromLocalStorage();
   if (e.target.classList.contains("prev")) {
     if (currentPage === 1) return;
     currentPage = currentPage - 1;
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, items);
     updatePagination();
   } else if (e.target.classList.contains("next")) {
     if (currentPage === getPagesNumber()) return;
     currentPage = currentPage + 1;
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, items);
     updatePagination();
   } else if (e.target.classList.contains("page")) {
     currentPage = parseInt(e.target.textContent);
-    getFromLocalStorage(currentPage);
+    getFromLocalStorage(currentPage, items);
     updatePagination();
   }
 });
