@@ -242,6 +242,14 @@ function enableSort() {
 
 disableButton();
 
+input.addEventListener("focus", () => {
+  if (currentPage !== 1) {
+    currentPage = 1;
+    updatePagination();
+    getFromLocalStorage(1, getItemsFromLocalStorage());
+  }
+});
+
 input.addEventListener("input", () => {
   getInputValue();
 });
@@ -283,16 +291,19 @@ function deleteItem(element) {
   item.addEventListener("animationend", () => {
     let items = getItemsFromLocalStorage();
     items = items.filter((i) => i.id !== itemId);
-
     localStorage.setItem("items", JSON.stringify(items));
-
     if (isFiltered) {
       filteredItems = filteredItems.filter((i) => i.id !== itemId);
     }
 
     currentPage = Math.min(currentPage, getPagesNumber());
-    getFromLocalStorage(currentPage, isFiltered ? filteredItems : items);
-    updatePagination();
+    if (currentPage === getPagesNumber() && list.children.length > 1) {
+      item.remove();
+    } else {
+      getFromLocalStorage(currentPage, isFiltered ? filteredItems : items);
+      updatePagination();
+    }
+
     showToast("Item Deleted", "danger", 2000);
 
     if (
@@ -471,8 +482,24 @@ function addNewCard(inputValue, dateValue) {
   };
   items.unshift(newItem);
   localStorage.setItem("items", JSON.stringify(items));
-  currentPage = 1;
-  getFromLocalStorage(currentPage, items);
+
+  if (currentPage === 1) {
+    if (list.children.length >= itemsPerPage) {
+      list.children[itemsPerPage - 1].remove();
+    }
+    const li = listItemCard(
+      newItem.id,
+      newItem.value,
+      newItem.checked,
+      newItem.date
+    );
+
+    list.insertAdjacentHTML("afterbegin", li);
+  } else {
+    currentPage = 1;
+    getFromLocalStorage(currentPage, items);
+  }
+
   enableSort();
   enableSearch();
   updatePagination();
